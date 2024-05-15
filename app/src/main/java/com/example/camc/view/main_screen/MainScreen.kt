@@ -124,9 +124,9 @@ fun MainScreenContent(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(65.dp))
-        Text("Willkommen zur Sensor App für das erste Praktikum")
+        Text("Willkommen zur Datensammler App für das erste Praktikum")
         Button(onClick = {
-            uriHandler.openUri("https://github.com/720Florian/LM")
+            uriHandler.openUri("https://github.com/AlexKirovhsbo/CAMC")
         }) {
             Text("Github")
         }
