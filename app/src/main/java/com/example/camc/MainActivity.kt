@@ -80,13 +80,13 @@ fun Nav(modifier: Modifier = Modifier,
             unselectedIcon = painterResource(R.drawable.baseline_home_24),
             route = "mainscreen"
         ),
-        NavItem(
+        /*NavItem(
             title = "Location",
             selectedIcon = painterResource(R.drawable.baseline_place_24),
             unselectedIcon = painterResource(R.drawable.baseline_place_24),
             route = "gps"
-        ),
-        NavItem(
+        ),*/
+       NavItem(
             title = "Acceleration",
             selectedIcon = painterResource(R.drawable.baseline_speed_24),
             unselectedIcon = painterResource(R.drawable.baseline_speed_24),
