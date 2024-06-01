@@ -11,6 +11,7 @@ import com.example.camc.model.room.ReadingsDatabase
 import com.example.camc.view.acceleration_screen.AccelerationScreen
 import com.example.camc.view.acceleration_screen.AccelerationViewModel
 import com.example.camc.view.acceleration_screen.AccelerationViewModelFactory
+import com.example.camc.view.all_screen.allViewModel
 import com.example.camc.view.gps_screen.GpsViewModel
 import com.example.camc.view.gps_screen.GpsViewModelFactory
 import com.example.camc.view.gyroscope_screen.GyroViewModel
@@ -22,7 +23,9 @@ import com.example.camc.view.magnet_screen.MagnetViewModelFactory
 import com.example.camc.view.main_screen.MainScreen
 import com.example.camc.view.main_screen.MainViewModel
 import com.example.camc.view.main_screen.MainViewModelFactory
-
+import com.example.camc.view.all_screen.allViewModelFactory
+import com.example.camc.view.all_screen.AllScreen
+import com.example.camc.view.all_screen.AllScreen
 
 @Composable
 fun Navigation(navController: NavHostController, database: ReadingsDatabase) {
@@ -56,6 +59,12 @@ fun Navigation(navController: NavHostController, database: ReadingsDatabase) {
                 factory = MagnetViewModelFactory(database.magnetDao)
             )
             MagnetScreen(magnetViewModel)
+        }
+        composable(route = Screen.all_screen.route) {
+            val allViewModel = viewModel<allViewModel>(
+                factory = allViewModelFactory(database.accelerationDao)
+            )
+            AllScreen(allViewModel)
         }
     }
 }

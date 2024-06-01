@@ -10,21 +10,18 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,11 +33,9 @@ import com.example.camc.model.SelectionItem
 import com.example.camc.view.SensorButtonRow
 import com.example.camc.view.LifeCycleHookWrapper
 import com.example.camc.view.SelectorRow
-import com.example.camc.view.acceleration_screen.representations.ReadingAccelTextRepr
 import com.example.camc.view.acceleration_screen.representations.ReadingGyroChartRepr
 import com.example.camc.view.acceleration_screen.representations.ReadingGyroTextRepr
 import com.example.camc.view.getSampleRateDescr
-import com.example.camc.view.gyroscope_screen.representations.ReadingAccelChartRepr
 
 @Composable
 fun GyroscopeScreen(viewModel: GyroViewModel) {
@@ -116,21 +111,25 @@ fun GyroscopeScreen(viewModel: GyroViewModel) {
             }
             when (state.representationMethod) {
                 0 -> {
-                    ReadingGyroTextRepr(readings = state.currentReadings,
+                    ReadingGyroTextRepr(
+                        readings = state.currentReadings,
                         showAmount = 20,
                         safetyPadding = 2)
                 }
                 1 -> {
-                    ReadingGyroChartRepr(readings = state.currentReadings,
+                    ReadingGyroChartRepr(
+                        readings = state.currentReadings,
                         showAmount = 20,
                         safetyPadding = 2)
                 }
                 2 -> {
-                    ReadingGyroChartRepr(readings = state.currentReadings,
+                    ReadingGyroChartRepr(
+                        readings = state.currentReadings,
                         showAmount = 20,
                         safetyPadding = 2)
 
-                    ReadingGyroTextRepr(readings = state.currentReadings,
+                    ReadingGyroTextRepr(
+                        readings = state.currentReadings,
                         showAmount = 10,
                         safetyPadding = 2)
                 }

@@ -5,14 +5,11 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import androidx.compose.animation.core.animateDp
-import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -41,12 +38,11 @@ import com.example.camc.view.LifeCycleHookWrapper
 import com.example.camc.view.SelectorRow
 import com.example.camc.view.acceleration_screen.representations.ReadingAccelTextRepr
 import com.example.camc.view.getSampleRateDescr
+import com.example.camc.view.gyroscope_screen.GyroViewModel
 import com.example.camc.view.gyroscope_screen.representations.ReadingAccelChartRepr
 
 @Composable
-fun AccelerationScreen(
-    viewModel: AccelerationViewModel
-) {
+fun AccelerationScreen(viewModel: AccelerationViewModel) {
     val state by viewModel.state.collectAsState()
     val ctx = LocalContext.current
 

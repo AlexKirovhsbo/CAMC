@@ -8,27 +8,21 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.camc.model.room.entities.AccelerationReading
 import com.example.camc.model.room.entities.GyroReading
 import com.example.camc.view.createPath
 import com.example.camc.view.createText
 
 @OptIn(ExperimentalTextApi::class)
 @Composable
-fun ReadingGyroChartRepr(readings: List<GyroReading>, showAmount: Int,
-                     safetyPadding: Int, chartHeight: Dp = 80.dp) {
+fun ReadingGyroChartRepr(
+    readings: List<GyroReading>, showAmount: Int,
+    safetyPadding: Int, chartHeight: Dp = 80.dp) {
     val maxRange = 10f
     val minRange = -10f
     val yRange = maxRange - minRange

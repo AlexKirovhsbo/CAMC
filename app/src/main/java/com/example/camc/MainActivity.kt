@@ -86,6 +86,12 @@ fun Nav(modifier: Modifier = Modifier,
             unselectedIcon = painterResource(R.drawable.baseline_place_24),
             route = "gps"
         ),*/
+        NavItem(
+            title = "Alle Sensoren",
+            selectedIcon = painterResource(R.drawable.baseline_place_24),
+            unselectedIcon = painterResource(R.drawable.baseline_place_24),
+            route = "all_screen"
+        ),
        NavItem(
             title = "Acceleration",
             selectedIcon = painterResource(R.drawable.baseline_speed_24),

@@ -7,4 +7,5 @@ sealed class Screen(val route: String) {
     object AccelScreen : Screen("accel")
     object GyroScreen : Screen("gyro")
     object MagScreen : Screen("mag")
+    object all_screen : Screen("all_screen")
 }
