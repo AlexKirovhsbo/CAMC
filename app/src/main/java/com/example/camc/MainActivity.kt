@@ -90,7 +90,7 @@ fun Nav(modifier: Modifier = Modifier,
             title = "Alle Sensoren",
             selectedIcon = painterResource(R.drawable.baseline_place_24),
             unselectedIcon = painterResource(R.drawable.baseline_place_24),
-            route = "all_screen"
+            route = "allSensors"
         ),
        NavItem(
             title = "Acceleration",
