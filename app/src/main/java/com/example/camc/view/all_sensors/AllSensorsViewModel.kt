@@ -65,8 +65,6 @@ class AllSensorsViewModel(
     fun onReceiveNewReading(values: FloatArray) {
         assert(values.size >= 3)
 
-        values.forEach { it ->  logger.warning(it.toString())};
-
     }
 
     fun setBottomSheetOpenedTarget(target: Boolean) {

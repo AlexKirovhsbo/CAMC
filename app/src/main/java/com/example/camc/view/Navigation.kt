@@ -11,7 +11,6 @@ import com.example.camc.model.room.ReadingsDatabase
 import com.example.camc.view.acceleration_screen.AccelerationScreen
 import com.example.camc.view.acceleration_screen.AccelerationViewModel
 import com.example.camc.view.acceleration_screen.AccelerationViewModelFactory
-import com.example.camc.view.allSensors.AllSensorsScreen
 import com.example.camc.view.all_sensors.*
 import com.example.camc.view.gps_screen.GpsViewModel
 import com.example.camc.view.gps_screen.GpsViewModelFactory

@@ -1,4 +1,4 @@
-package com.example.camc.view.allSensors
+package com.example.camc.view.all_sensors
 
 import android.content.Context
 import android.hardware.Sensor
@@ -42,6 +42,7 @@ import com.example.camc.view.getSampleRateDescr
 import com.example.camc.view.gyroscope_screen.representations.ReadingAccelChartRepr
 import com.example.camc.view.magnet_screen.representations.ReadingMagnetChartRepr
 import com.example.camc.view.magnet_screen.representations.ReadingMagnetTextRepr
+import java.util.logging.Logger
 
 @Composable
 fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
@@ -168,7 +169,7 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
         }
     }
 
-    AccelerationSettingsModal(
+    AllSensorsSettingsModal(
         state = AllSensorsState(),
         viewModel = viewModel,
         selectedValue = state.representationMethod,
@@ -236,55 +237,60 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
     }
     }
 
-
-    GyroSettingsModal(
-    state = AllSensorsState(),
-    viewModel = viewModel,
-    selectedValue = state.representationMethod,
-    selection = selection
-    ) {
-        viewModel.setRepresentationMethod(it.associatedValue)
-    }
-
     Text("Magnetometer", fontSize = 32.sp)
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(400.dp))
-
-
+    Column ( modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally){
+        Spacer(modifier = Modifier.height(100.dp))
+        SensorButtonRow(
+            clicked = state.isRecording,
+            readingCount = state.currentReadingsMag.size,
+            onStartClicked = { viewModel.startRecording() },
+            onStopClicked = { viewModel.stopRecording() },
+            onDeleteClicked = { viewModel.nukeReadings() },
+            onSettingsClicked = { viewModel.toggleBottomSheetOpenedTarget() })
+        Spacer(modifier = Modifier.height(260.dp))
         if (!state.isRecording && state.currentReadingsMag.size < 20) {
             Text("Magnetometer", fontSize = 32.sp)
+
             Text(
                 "X: ${state.singleReadingMag.xAxis}\nY: ${state.singleReadingMag.yAxis}\nZ: ${state.singleReadingMag.zAxis}",
                 fontSize = 20.sp
             )
         } else {
-            for(item in selection) {
-                if(state.representationMethod == item.associatedValue) {
+            for (item in selection) {
+                if (state.representationMethod == item.associatedValue) {
                     Text(item.label, fontSize = 32.sp)
                 }
             }
             when (state.representationMethod) {
                 0 -> {
-                    ReadingMagnetTextRepr(readings = state.currentReadingsMag,
+                    ReadingMagnetTextRepr(
+                        readings = state.currentReadingsMag,
                         showAmount = 20,
-                        safetyPadding = 2)
+                        safetyPadding = 2
+                    )
                 }
+
                 1 -> {
-                    ReadingMagnetChartRepr(readings = state.currentReadingsMag,
+                    ReadingMagnetChartRepr(
+                        readings = state.currentReadingsMag,
                         showAmount = 20,
-                        safetyPadding = 2)
+                        safetyPadding = 2
+                    )
                 }
+
                 2 -> {
-                    ReadingMagnetChartRepr(readings = state.currentReadingsMag,
+                    ReadingMagnetChartRepr(
+                        readings = state.currentReadingsMag,
                         showAmount = 20,
-                        safetyPadding = 2)
+                        safetyPadding = 2
+                    )
 
-                    ReadingMagnetTextRepr(readings = state.currentReadingsMag,
+                    ReadingMagnetChartRepr(
+                        readings = state.currentReadingsMag,
                         showAmount = 10,
-                        safetyPadding = 2)
+                        safetyPadding = 2
+                    )
                 }
             }
         }
@@ -293,12 +299,12 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AccelerationSettingsModal(
+fun AllSensorsSettingsModal(
     state: AllSensorsState,
     viewModel: AllSensorsViewModel,
     selectedValue: Int,
     selection: List<SelectionItem>,
-    onRepresentationChanged: (SelectionItem)->Unit,
+    onRepresentationChanged: (SelectionItem) -> Unit,
 ) {
     var sliderPosition by remember { mutableStateOf(state.sampleRate + 0.0f) }
 
@@ -329,90 +335,6 @@ fun AccelerationSettingsModal(
                     onRepresentationChanged(selectedItem)
                 }
             }
-            Spacer(Modifier.height(20.dp))
-        }
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun GyroSettingsModal(
-    state: AllSensorsState,
-    viewModel: AllSensorsViewModel,
-    selectedValue: Int,
-    selection: List<SelectionItem>,
-    onRepresentationChanged: (SelectionItem)->Unit
-) {
-    var sliderPosition by remember { mutableStateOf(state.sampleRate + 0.0f) }
-
-    if (state.showBottomModal) {
-        ModalBottomSheet(onDismissRequest = { viewModel.setBottomSheetOpenedTarget(false) }) {
-            Column(modifier = Modifier.padding(horizontal = 30.dp)) {
-                Text(text = getSampleRateDescr(state.sampleRate))
-                Slider(
-                    value = sliderPosition,
-                    onValueChange = {
-                        sliderPosition = it
-                        viewModel.setSampleRate(it.toInt())
-                    },
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.secondary,
-                        activeTrackColor = MaterialTheme.colorScheme.secondary,
-                        inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-                    ),
-                    steps = 2,
-                    valueRange = 0f..3f
-                )
-
-                SelectorRow(
-                    items = selection,
-                    selectedValue = selectedValue,
-                ) { selectedItem ->
-                    onRepresentationChanged(selectedItem)
-                }
-            }
-            Spacer(Modifier.height(20.dp))
-        }
-    }
-}
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MagnetSettingsModal(
-    state: AllSensorsState,
-    viewModel: AllSensorsViewModel,
-    selectedValue: Int,
-    selection: List<SelectionItem>,
-    onRepresentationChanged: (SelectionItem)->Unit,
-) {
-    var sliderPosition by remember { mutableStateOf(state.sampleRate + 0.0f) }
-
-    if (state.showBottomModal) {
-        ModalBottomSheet(onDismissRequest = { viewModel.setBottomSheetOpenedTarget(false) }) {
-
-            Column(modifier = Modifier.padding(horizontal = 30.dp)) {
-                Text(text = getSampleRateDescr(state.sampleRate))
-                Slider(
-                    value = sliderPosition,
-                    onValueChange = {
-                        sliderPosition = it
-                        viewModel.setSampleRate(it.toInt())
-                    },
-                    colors = SliderDefaults.colors(
-                        thumbColor = MaterialTheme.colorScheme.secondary,
-                        activeTrackColor = MaterialTheme.colorScheme.secondary,
-                        inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-                    ),
-                    steps = 2,
-                    valueRange = 0f..3f
-                )
-
-                SelectorRow(
-                    items = selection,
-                    selectedValue = selectedValue,
-                ) { selectedItem ->
-                    onRepresentationChanged(selectedItem)
-                }
-            }
-            Spacer(Modifier.height(20.dp))
         }
     }
 }
