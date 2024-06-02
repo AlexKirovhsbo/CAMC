@@ -1,4 +1,4 @@
-package com.example.camc.view.all_screen
+package com.example.camc.view.allSensors
 
 import android.content.Context
 import android.hardware.Sensor
@@ -33,18 +33,18 @@ import com.example.camc.model.SelectionItem
 import com.example.camc.view.SensorButtonRow
 import com.example.camc.view.LifeCycleHookWrapper
 import com.example.camc.view.SelectorRow
-import com.example.camc.view.acceleration_screen.AccelerationState
 import com.example.camc.view.acceleration_screen.representations.ReadingAccelTextRepr
 import com.example.camc.view.acceleration_screen.representations.ReadingGyroChartRepr
 import com.example.camc.view.acceleration_screen.representations.ReadingGyroTextRepr
+import com.example.camc.view.all_sensors.AllSensorsState
+import com.example.camc.view.all_sensors.AllSensorsViewModel
 import com.example.camc.view.getSampleRateDescr
 import com.example.camc.view.gyroscope_screen.representations.ReadingAccelChartRepr
-import com.example.camc.view.gyroscope_screen.GyroState
 import com.example.camc.view.magnet_screen.representations.ReadingMagnetChartRepr
 import com.example.camc.view.magnet_screen.representations.ReadingMagnetTextRepr
 
 @Composable
-fun AllScreen(viewModel: allViewModel) {
+fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
     val state by viewModel.state.collectAsState()
     val ctx = LocalContext.current
 
@@ -114,7 +114,7 @@ fun AllScreen(viewModel: allViewModel) {
         Spacer(modifier = Modifier.height(10.dp))
         SensorButtonRow(
             clicked = state.isRecording,
-            readingCount = state.currentReadings.size,
+            readingCount = state.currentReadingsAccel.size,
             onStartClicked = { viewModel.startRecording() },
             onStopClicked = { viewModel.stopRecording() },
             onDeleteClicked = { viewModel.nukeReadings() },
@@ -122,10 +122,10 @@ fun AllScreen(viewModel: allViewModel) {
 
         Spacer(modifier = Modifier.height(80.dp))
 
-        if (!state.isRecording && state.currentReadings.size < 20) {
+        if (!state.isRecording && state.currentReadingsAccel.size < 20) {
             Text("Accelerometer", fontSize = 32.sp)
             Text(
-                "X: ${state.singleReading.xAxis}\nY: ${state.singleReading.yAxis}\nZ: ${state.singleReading.zAxis}",
+                "X: ${state.singleReadingAccel.xAxis}\nY: ${state.singleReadingAccel.yAxis}\nZ: ${state.singleReadingAccel.zAxis}",
                 fontSize = 20.sp
             )
         } else {
@@ -137,7 +137,7 @@ fun AllScreen(viewModel: allViewModel) {
             when (state.representationMethod) {
                 0 -> {
                     ReadingAccelTextRepr(
-                        readings = state.currentReadings,
+                        readings = state.currentReadingsAccel,
                         showAmount = 20,
                         safetyPadding = 2
                     )
@@ -145,7 +145,7 @@ fun AllScreen(viewModel: allViewModel) {
 
                 1 -> {
                     ReadingAccelChartRepr(
-                        readings = state.currentReadings,
+                        readings = state.currentReadingsAccel,
                         showAmount = 20,
                         safetyPadding = 2
                     )
@@ -153,13 +153,13 @@ fun AllScreen(viewModel: allViewModel) {
 
                 2 -> {
                     ReadingAccelChartRepr(
-                        readings = state.currentReadings,
+                        readings = state.currentReadingsAccel,
                         showAmount = 20,
                         safetyPadding = 2
                     )
 
                     ReadingAccelTextRepr(
-                        readings = state.currentReadings,
+                        readings = state.currentReadingsAccel,
                         showAmount = 10,
                         safetyPadding = 2
                     )
@@ -169,7 +169,7 @@ fun AllScreen(viewModel: allViewModel) {
     }
 
     AccelerationSettingsModal(
-        state = AllState(),
+        state = AllSensorsState(),
         viewModel = viewModel,
         selectedValue = state.representationMethod,
         selection = selection
@@ -177,23 +177,23 @@ fun AllScreen(viewModel: allViewModel) {
         viewModel.setRepresentationMethod(it.associatedValue)
     }
 
-    Text("Gyroskope", fontSize = 32.sp)
+    Text("Gyroskop", fontSize = 32.sp)
     Column ( modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally){
         Spacer(modifier = Modifier.height(100.dp))
     SensorButtonRow(
         clicked = state.isRecording,
-        readingCount = state.currentReadings.size,
+        readingCount = state.currentReadingsGyro.size,
         onStartClicked = { viewModel.startRecording() },
         onStopClicked = { viewModel.stopRecording() },
         onDeleteClicked = { viewModel.nukeReadings() },
         onSettingsClicked = { viewModel.toggleBottomSheetOpenedTarget() })
         Spacer(modifier = Modifier.height(120.dp))
-    if (!state.isRecording && state.currentReadings.size < 20) {
-        Text("Gyroskope", fontSize = 32.sp)
+    if (!state.isRecording && state.currentReadingsGyro.size < 20) {
+        Text("Gyroskop", fontSize = 32.sp)
 
         Text(
-            "X: ${state.singleReading.xAxis}\nY: ${state.singleReading.yAxis}\nZ: ${state.singleReading.zAxis}",
+            "X: ${state.singleReadingGyro.xAxis}\nY: ${state.singleReadingGyro.yAxis}\nZ: ${state.singleReadingGyro.zAxis}",
             fontSize = 20.sp
         )
     } else {
@@ -205,7 +205,7 @@ fun AllScreen(viewModel: allViewModel) {
         when (state.representationMethod) {
             0 -> {
                 ReadingGyroTextRepr(
-                    readings = state.currentReadingsgyro,
+                    readings = state.currentReadingsGyro,
                     showAmount = 20,
                     safetyPadding = 2
                 )
@@ -213,7 +213,7 @@ fun AllScreen(viewModel: allViewModel) {
 
             1 -> {
                 ReadingGyroChartRepr(
-                    readings = state.currentReadingsgyro,
+                    readings = state.currentReadingsGyro,
                     showAmount = 20,
                     safetyPadding = 2
                 )
@@ -221,13 +221,13 @@ fun AllScreen(viewModel: allViewModel) {
 
             2 -> {
                 ReadingGyroChartRepr(
-                    readings = state.currentReadingsgyro,
+                    readings = state.currentReadingsGyro,
                     showAmount = 20,
                     safetyPadding = 2
                 )
 
                 ReadingGyroTextRepr(
-                    readings = state.currentReadingsgyro,
+                    readings = state.currentReadingsGyro,
                     showAmount = 10,
                     safetyPadding = 2
                 )
@@ -238,7 +238,7 @@ fun AllScreen(viewModel: allViewModel) {
 
 
     GyroSettingsModal(
-    state = AllState(),
+    state = AllSensorsState(),
     viewModel = viewModel,
     selectedValue = state.representationMethod,
     selection = selection
@@ -254,10 +254,10 @@ fun AllScreen(viewModel: allViewModel) {
         Spacer(modifier = Modifier.height(400.dp))
 
 
-        if (!state.isRecording && state.currentReadings.size < 20) {
+        if (!state.isRecording && state.currentReadingsMag.size < 20) {
             Text("Magnetometer", fontSize = 32.sp)
             Text(
-                "X: ${state.singleReading.xAxis}\nY: ${state.singleReading.yAxis}\nZ: ${state.singleReading.zAxis}",
+                "X: ${state.singleReadingMag.xAxis}\nY: ${state.singleReadingMag.yAxis}\nZ: ${state.singleReadingMag.zAxis}",
                 fontSize = 20.sp
             )
         } else {
@@ -268,21 +268,21 @@ fun AllScreen(viewModel: allViewModel) {
             }
             when (state.representationMethod) {
                 0 -> {
-                    ReadingMagnetTextRepr(readings = state.currentReadingsmag,
+                    ReadingMagnetTextRepr(readings = state.currentReadingsMag,
                         showAmount = 20,
                         safetyPadding = 2)
                 }
                 1 -> {
-                    ReadingMagnetChartRepr(readings = state.currentReadingsmag,
+                    ReadingMagnetChartRepr(readings = state.currentReadingsMag,
                         showAmount = 20,
                         safetyPadding = 2)
                 }
                 2 -> {
-                    ReadingMagnetChartRepr(readings = state.currentReadingsmag,
+                    ReadingMagnetChartRepr(readings = state.currentReadingsMag,
                         showAmount = 20,
                         safetyPadding = 2)
 
-                    ReadingMagnetTextRepr(readings = state.currentReadingsmag,
+                    ReadingMagnetTextRepr(readings = state.currentReadingsMag,
                         showAmount = 10,
                         safetyPadding = 2)
                 }
@@ -294,8 +294,8 @@ fun AllScreen(viewModel: allViewModel) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AccelerationSettingsModal(
-    state: AllState,
-    viewModel: allViewModel,
+    state: AllSensorsState,
+    viewModel: AllSensorsViewModel,
     selectedValue: Int,
     selection: List<SelectionItem>,
     onRepresentationChanged: (SelectionItem)->Unit,
@@ -336,8 +336,8 @@ fun AccelerationSettingsModal(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GyroSettingsModal(
-    state: AllState,
-    viewModel: allViewModel,
+    state: AllSensorsState,
+    viewModel: AllSensorsViewModel,
     selectedValue: Int,
     selection: List<SelectionItem>,
     onRepresentationChanged: (SelectionItem)->Unit
@@ -377,8 +377,8 @@ fun GyroSettingsModal(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MagnetSettingsModal(
-    state: AllState,
-    viewModel: MagnetViewModel,
+    state: AllSensorsState,
+    viewModel: AllSensorsViewModel,
     selectedValue: Int,
     selection: List<SelectionItem>,
     onRepresentationChanged: (SelectionItem)->Unit,

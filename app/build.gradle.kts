@@ -83,5 +83,5 @@ dependencies {
     implementation("androidx.room:room-ktx:$room_version")
 
     //Map
-    implementation ("org.osmdroid:osmdroid-android:6.1.14")
+    implementation ("org.osmdroid:osmdroid-android:6.1.18")
 }
