@@ -106,6 +106,15 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
         )
         onDispose { }
     }
+    DisposableEffect(key1 = state.sampleRate) {
+        sensorManager?.unregisterListener(sensorEventListener)
+        sensorManager!!.registerListener(
+            sensorEventListener,
+            sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
+            state.sampleRate
+        )
+        onDispose { }
+    }
 
 
     Column(
@@ -170,7 +179,7 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
     }
 
     AllSensorsSettingsModal(
-        state = AllSensorsState(),
+        state = state,
         viewModel = viewModel,
         selectedValue = state.representationMethod,
         selection = selection
@@ -178,7 +187,7 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
         viewModel.setRepresentationMethod(it.associatedValue)
     }
 
-    Text("Gyroskop", fontSize = 32.sp)
+    Text("Alle Sensoren", fontSize = 32.sp)
     Column ( modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally){
         Spacer(modifier = Modifier.height(100.dp))
