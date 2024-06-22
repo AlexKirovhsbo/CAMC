@@ -10,7 +10,9 @@ import com.example.camc.model.room.dao.GyroDao
 import com.example.camc.model.room.dao.LocationDao
 import com.example.camc.model.room.dao.MagnetDao
 import com.example.camc.model.room.entities.AccelerationReading
+import com.example.camc.model.room.entities.AccelerationReadingInfo
 import com.example.camc.model.room.entities.LocationReading
+import com.example.camc.model.room.entities.LocationReadingInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -210,60 +212,66 @@ class AllSensorsViewModel(
         }
     }
     suspend fun exportMergedReadingsToCsv(context: Context) {
-        val accelerationReadings = accelerationDao.getReadingsOrderedByTime().first()
-        val locationReadings = locationDao.getReadingsOrderedByTime().first()
+        val accelerationReadings = accelerationDao.getReadingInfoOrderedByTime().first()
+        val locationReadings = locationDao.getReadingInfoOrderedByTime().first()
         val mergedReadings = mergeReadings(accelerationReadings, locationReadings)
 
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "merged_readings.csv")
 
         FileWriter(file).use { writer ->
-            writer.append("timestampMillis,accel_xAxis,accel_yAxis,accel_zAxis,accel_transportationMode,accel_sensor,lat,long,altitude,velocity,location_transportationMode,location_sensor\n")
+            writer.append("timestampMillis,accel_xAxis,accel_yAxis,accel_zAxis,accel_transportationMode,accel_sensor,velocity,location_transportationMode,location_sensor\n")
             mergedReadings.forEach { reading ->
-                writer.append("${reading.timestampMillis},${reading.accel?.xAxis ?: ""},${reading.accel?.yAxis ?: ""},${reading.accel?.zAxis ?: ""},${reading.accel?.transportationMode ?: ""},${reading.accel?.sensor ?: ""},${reading.location?.lat ?: ""},${reading.location?.long ?: ""},${reading.location?.altitude ?: ""},${reading.location?.velocity ?: ""},${reading.location?.transportationMode ?: ""},${reading.location?.sensor ?: ""}\n")
+                writer.append("${reading.timestampMillis},${reading.accel?.xAxis ?: ""},${reading.accel?.yAxis ?: ""},${reading.accel?.zAxis ?: ""},${reading.accel?.transportationMode ?: ""},${reading.accel?.sensor ?: ""},${reading.location?.velocity ?: ""},${reading.location?.transportationMode ?: ""},${reading.location?.sensor ?: ""}\n")
             }
         }
     }
 
-    private fun mergeReadings(accelReadings: List<AccelerationReading>, locationReadings: List<LocationReading>): List<MergedReading> {
+    private fun mergeReadings(accelReadings: List<AccelerationReadingInfo>, locationReadings: List<LocationReadingInfo>): List<MergedReading> {
         val mergedList = mutableListOf<MergedReading>()
 
         var accelIndex = 0
         var locationIndex = 0
 
-        while (accelIndex < accelReadings.size && locationIndex < locationReadings.size) {
-            val accel = accelReadings[accelIndex]
-            val location = locationReadings[locationIndex]
+        var lastAccel: AccelerationReadingInfo? = null
+        var lastLocation: LocationReadingInfo? = null
 
-            if (accel.timestampMillis == location.timestampMillis) {
-                mergedList.add(MergedReading(accel.timestampMillis, accel, location))
-                accelIndex++
+        while (accelIndex < accelReadings.size || locationIndex < locationReadings.size) {
+            val accel = if (accelIndex < accelReadings.size) accelReadings[accelIndex] else null
+            val location = if (locationIndex < locationReadings.size) locationReadings[locationIndex] else null
+
+            if (accel == null) {
+                mergedList.add(MergedReading(location!!.timestampMillis, lastAccel, location))
                 locationIndex++
-            } else if (accel.timestampMillis < location.timestampMillis) {
-                mergedList.add(MergedReading(accel.timestampMillis, accel, null))
+            } else if (location == null) {
+                mergedList.add(MergedReading(accel.timestampMillis, accel, lastLocation))
                 accelIndex++
             } else {
-                mergedList.add(MergedReading(location.timestampMillis, null, location))
-                locationIndex++
+                if (accel.timestampMillis < location.timestampMillis) {
+                    mergedList.add(MergedReading(accel.timestampMillis, accel, lastLocation))
+                    lastAccel = accel
+                    accelIndex++
+                } else if (accel.timestampMillis > location.timestampMillis) {
+                    mergedList.add(MergedReading(location.timestampMillis, lastAccel, location))
+                    lastLocation = location
+                    locationIndex++
+                } else {
+                    mergedList.add(MergedReading(accel.timestampMillis, accel, location))
+                    lastAccel = accel
+                    lastLocation = location
+                    accelIndex++
+                    locationIndex++
+                }
             }
-        }
-
-        while (accelIndex < accelReadings.size) {
-            mergedList.add(MergedReading(accelReadings[accelIndex].timestampMillis, accelReadings[accelIndex], null))
-            accelIndex++
-        }
-
-        while (locationIndex < locationReadings.size) {
-            mergedList.add(MergedReading(locationReadings[locationIndex].timestampMillis, null, locationReadings[locationIndex]))
-            locationIndex++
         }
 
         return mergedList
     }
 
+
     data class MergedReading(
         val timestampMillis: Long,
-        val accel: AccelerationReading?,
-        val location: LocationReading?
+        val accel: AccelerationReadingInfo?,
+        val location: LocationReadingInfo?
     )
 }
 
