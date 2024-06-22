@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.example.camc.model.room.entities.LocationReading
+import com.example.camc.model.room.entities.LocationReadingInfo
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,6 +18,13 @@ interface LocationDao {
 
     @Query("SELECT * FROM locationreading ORDER BY timestampMillis ASC")
     fun getReadingsOrderedByTime(): Flow<List<LocationReading>>
+
+    @Query("""
+        SELECT timestampMillis, velocity, transportationMode, sensor 
+        FROM locationreading 
+        ORDER BY timestampMillis ASC
+    """)
+    fun getReadingInfoOrderedByTime(): Flow<List<LocationReadingInfo>>
 
     @Query("DELETE FROM locationreading")
     suspend fun nukeReadings()

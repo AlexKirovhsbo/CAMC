@@ -48,7 +48,7 @@ class MainActivity : ComponentActivity() {
             applicationContext,
             ReadingsDatabase::class.java,
             "readings.db"
-        ).build()
+        ).fallbackToDestructiveMigration().build()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -11,5 +11,8 @@ data class LocationReading(
     val timestampMillis: Long,
     val lat: Double,
     val long: Double,
-    val altitude: Double
+    val altitude: Double,
+    val velocity: Float,
+    val transportationMode: String? = null,
+    val sensor : String = "gps",
 )

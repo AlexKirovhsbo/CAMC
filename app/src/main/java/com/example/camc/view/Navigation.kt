@@ -61,7 +61,7 @@ fun Navigation(navController: NavHostController, database: ReadingsDatabase) {
             val allViewModel = viewModel<AllSensorsViewModel>(
                 factory = AllSensorsViewModelFactory(database.accelerationDao, database.gyroDao, database.magnetDao, database.locationDao)
             )
-            AllSensorsScreen(allViewModel)
+            AllSensorsScreen(allViewModel, navController)
         }
     }
 }

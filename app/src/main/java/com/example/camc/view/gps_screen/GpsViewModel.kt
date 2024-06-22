@@ -51,6 +51,7 @@ class GpsViewModel(
             timestampMillis = System.currentTimeMillis(),
             long = long,
             lat = lat,
+            velocity = 0.0F,
             altitude = 0.0 //values[2]
         )
 

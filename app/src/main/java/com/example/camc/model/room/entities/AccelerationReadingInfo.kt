@@ -3,15 +3,11 @@ package com.example.camc.model.room.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
-data class AccelerationReading(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-
+data class AccelerationReadingInfo(
     val timestampMillis: Long,
     val xAxis: Float,
     val yAxis: Float,
     val zAxis: Float,
-    val transportationMode: String? = null,
-    val sensor : String = "accelerometer",
+    val transportationMode: String?,
+    val sensor: String
 )

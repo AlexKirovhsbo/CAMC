@@ -1,18 +1,27 @@
 package com.example.camc.view.all_sensors
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.location.LocationListener
+import android.location.LocationManager
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -22,288 +31,148 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
-import com.example.camc.model.SelectionItem
+import androidx.navigation.NavHostController
 import com.example.camc.view.SensorButtonRow
 import com.example.camc.view.LifeCycleHookWrapper
-import com.example.camc.view.SelectorRow
-import com.example.camc.view.acceleration_screen.representations.ReadingAccelTextRepr
-import com.example.camc.view.acceleration_screen.representations.ReadingGyroChartRepr
-import com.example.camc.view.acceleration_screen.representations.ReadingGyroTextRepr
-import com.example.camc.view.all_sensors.AllSensorsState
-import com.example.camc.view.all_sensors.AllSensorsViewModel
+import com.example.camc.view.getMsRateDescr
 import com.example.camc.view.getSampleRateDescr
-import com.example.camc.view.gyroscope_screen.representations.ReadingAccelChartRepr
-import com.example.camc.view.magnet_screen.representations.ReadingMagnetChartRepr
-import com.example.camc.view.magnet_screen.representations.ReadingMagnetTextRepr
-import java.util.logging.Logger
+import kotlinx.coroutines.launch
 
 @Composable
-fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
+fun AllSensorsScreen(viewModel: AllSensorsViewModel, navController: NavHostController) {
     val state by viewModel.state.collectAsState()
     val ctx = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
+    if (ActivityCompat.checkSelfPermission(
+            ctx,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            ctx,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        navController.navigate("mainscreen")
+        return
+    }
 
     var sensorManager by remember { mutableStateOf<SensorManager?>(null) }
     var sensorEventListener by remember { mutableStateOf<SensorEventListener?>(null) }
-    val selection = SelectionItem.litFromLabels("Text", "Chart", "Mixed")
+    var locationManager by remember { mutableStateOf<LocationManager?>(null) }
+    var locationListener by remember { mutableStateOf<LocationListener?>(null) }
 
     LifeCycleHookWrapper(
         onEvent = { _, event ->
             if (event == Lifecycle.Event.ON_DESTROY) {
-                sensorManager!!.unregisterListener(sensorEventListener)
+                sensorManager?.unregisterListener(sensorEventListener)
             } else if (event == Lifecycle.Event.ON_CREATE) {
-                sensorManager =
-                    ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+                sensorManager = ctx.getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
                 sensorEventListener = object : SensorEventListener {
-                    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {
-                    }
+                    override fun onAccuracyChanged(sensor: Sensor, accuracy: Int) {}
 
                     override fun onSensorChanged(event: SensorEvent) {
-                        viewModel.onReceiveNewReading(event.values)
+                        viewModel.onReceiveNewAccelReading(event.values)
                     }
                 }
 
-                sensorManager!!.registerListener(
-                    sensorEventListener,
-                    sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-                    state.sampleRate
-                )
-                sensorManager!!.registerListener(
-                    sensorEventListener,
-                    sensorManager!!.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-                    state.sampleRate
-                )
+                locationManager = ctx.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                locationListener = LocationListener { p0 ->
+                    viewModel.onReceiveNewGpsReading(p0.longitude, p0.latitude, p0.speed)
+                }
+                locationListener?.let {
+                    locationManager!!.requestLocationUpdates(
+                        state.providerGps,
+                        state.sampleRateGpsMs.toLong(),
+                        state.meterSelectionGps,
+                        it
+                    )
+                }
+
+                sensorManager?.let { sm ->
+                    sensorEventListener?.let { sel ->
+                        sm.registerListener(
+                            sel,
+                            sm.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+                            state.sampleRateAccel,
+                        )
+                    }
+                }
             }
         },
         attachToDipose = { sensorManager?.unregisterListener(sensorEventListener) }
     )
 
-    DisposableEffect(key1 = state.sampleRate) {
+    DisposableEffect(key1 = state.sampleRateAccel) {
         sensorManager?.unregisterListener(sensorEventListener)
-        sensorManager!!.registerListener(
+        sensorManager?.registerListener(
             sensorEventListener,
-            sensorManager!!.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
-            state.sampleRate
-        )
-
-
-        onDispose { }
-    }
-    DisposableEffect(key1 = state.sampleRate) {
-        sensorManager?.unregisterListener(sensorEventListener)
-        sensorManager!!.registerListener(
-            sensorEventListener,
-            sensorManager!!.getDefaultSensor(Sensor.TYPE_GYROSCOPE),
-            state.sampleRate
-        )
-        onDispose { }
-    }
-    DisposableEffect(key1 = state.sampleRate) {
-        sensorManager?.unregisterListener(sensorEventListener)
-        sensorManager!!.registerListener(
-            sensorEventListener,
-            sensorManager!!.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD),
-            state.sampleRate
+            sensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER),
+            state.sampleRateAccel
         )
         onDispose { }
     }
 
+    DisposableEffect(key1 = state.sampleRateGpsMs, key2 = state.meterSelectionGps, key3 = state.providerGps) {
+        locationListener?.let { locationManager?.removeUpdates(it) }
+        locationListener?.let {
+            locationManager!!.requestLocationUpdates(
+                state.providerGps,
+                state.sampleRateGpsMs.toLong(),
+                state.meterSelectionGps,
+                it
+            )
+        }
+
+        onDispose { }
+    }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(120.dp))
         SensorButtonRow(
             clicked = state.isRecording,
             readingCount = state.currentReadingsAccel.size,
             onStartClicked = { viewModel.startRecording() },
             onStopClicked = { viewModel.stopRecording() },
             onDeleteClicked = { viewModel.nukeReadings() },
-            onSettingsClicked = { viewModel.toggleBottomSheetOpenedTarget() })
-
-        Spacer(modifier = Modifier.height(80.dp))
-
-        if (!state.isRecording && state.currentReadingsAccel.size < 20) {
-            Text("Accelerometer", fontSize = 32.sp)
-            Text(
-                "X: ${state.singleReadingAccel.xAxis}\nY: ${state.singleReadingAccel.yAxis}\nZ: ${state.singleReadingAccel.zAxis}",
-                fontSize = 20.sp
-            )
-        } else {
-            for (item in selection) {
-                if (state.representationMethod == item.associatedValue) {
-                    Text(item.label, fontSize = 32.sp)
-                }
+            onSettingsClicked = { viewModel.toggleBottomSheetOpenedTarget() }
+        )
+        Button(onClick = {
+            coroutineScope.launch {
+                viewModel.exportAccelerationReadingsToCsv(ctx)
             }
-            when (state.representationMethod) {
-                0 -> {
-                    ReadingAccelTextRepr(
-                        readings = state.currentReadingsAccel,
-                        showAmount = 20,
-                        safetyPadding = 2
-                    )
-                }
+        }) {
+            Text("Export für Accelerometer")
+        }
 
-                1 -> {
-                    ReadingAccelChartRepr(
-                        readings = state.currentReadingsAccel,
-                        showAmount = 20,
-                        safetyPadding = 2
-                    )
-                }
+        Spacer(modifier = Modifier.height(10.dp))
 
-                2 -> {
-                    ReadingAccelChartRepr(
-                        readings = state.currentReadingsAccel,
-                        showAmount = 20,
-                        safetyPadding = 2
-                    )
-
-                    ReadingAccelTextRepr(
-                        readings = state.currentReadingsAccel,
-                        showAmount = 10,
-                        safetyPadding = 2
-                    )
-                }
+        Button(onClick = {
+            coroutineScope.launch {
+                viewModel.exportLocationReadingsToCsv(ctx)
             }
+        }) {
+            Text("Export für GPS")
         }
     }
+
 
     AllSensorsSettingsModal(
         state = state,
         viewModel = viewModel,
-        selectedValue = state.representationMethod,
-        selection = selection
-    ) {
-        viewModel.setRepresentationMethod(it.associatedValue)
-    }
 
-    Text("Alle Sensoren", fontSize = 32.sp)
-    Column ( modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally){
-        Spacer(modifier = Modifier.height(100.dp))
-    SensorButtonRow(
-        clicked = state.isRecording,
-        readingCount = state.currentReadingsGyro.size,
-        onStartClicked = { viewModel.startRecording() },
-        onStopClicked = { viewModel.stopRecording() },
-        onDeleteClicked = { viewModel.nukeReadings() },
-        onSettingsClicked = { viewModel.toggleBottomSheetOpenedTarget() })
-        Spacer(modifier = Modifier.height(120.dp))
-    if (!state.isRecording && state.currentReadingsGyro.size < 20) {
-        Text("Gyroskop", fontSize = 32.sp)
-
-        Text(
-            "X: ${state.singleReadingGyro.xAxis}\nY: ${state.singleReadingGyro.yAxis}\nZ: ${state.singleReadingGyro.zAxis}",
-            fontSize = 20.sp
-        )
-    } else {
-        for (item in selection) {
-            if (state.representationMethod == item.associatedValue) {
-                Text(item.label, fontSize = 32.sp)
-            }
-        }
-        when (state.representationMethod) {
-            0 -> {
-                ReadingGyroTextRepr(
-                    readings = state.currentReadingsGyro,
-                    showAmount = 20,
-                    safetyPadding = 2
-                )
-            }
-
-            1 -> {
-                ReadingGyroChartRepr(
-                    readings = state.currentReadingsGyro,
-                    showAmount = 20,
-                    safetyPadding = 2
-                )
-            }
-
-            2 -> {
-                ReadingGyroChartRepr(
-                    readings = state.currentReadingsGyro,
-                    showAmount = 20,
-                    safetyPadding = 2
-                )
-
-                ReadingGyroTextRepr(
-                    readings = state.currentReadingsGyro,
-                    showAmount = 10,
-                    safetyPadding = 2
-                )
-            }
-        }
-    }
-    }
-
-    Text("Magnetometer", fontSize = 32.sp)
-    Column ( modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally){
-        Spacer(modifier = Modifier.height(100.dp))
-        SensorButtonRow(
-            clicked = state.isRecording,
-            readingCount = state.currentReadingsMag.size,
-            onStartClicked = { viewModel.startRecording() },
-            onStopClicked = { viewModel.stopRecording() },
-            onDeleteClicked = { viewModel.nukeReadings() },
-            onSettingsClicked = { viewModel.toggleBottomSheetOpenedTarget() })
-        Spacer(modifier = Modifier.height(260.dp))
-        if (!state.isRecording && state.currentReadingsMag.size < 20) {
-            Text("Magnetometer", fontSize = 32.sp)
-
-            Text(
-                "X: ${state.singleReadingMag.xAxis}\nY: ${state.singleReadingMag.yAxis}\nZ: ${state.singleReadingMag.zAxis}",
-                fontSize = 20.sp
-            )
-        } else {
-            for (item in selection) {
-                if (state.representationMethod == item.associatedValue) {
-                    Text(item.label, fontSize = 32.sp)
-                }
-            }
-            when (state.representationMethod) {
-                0 -> {
-                    ReadingMagnetTextRepr(
-                        readings = state.currentReadingsMag,
-                        showAmount = 20,
-                        safetyPadding = 2
-                    )
-                }
-
-                1 -> {
-                    ReadingMagnetChartRepr(
-                        readings = state.currentReadingsMag,
-                        showAmount = 20,
-                        safetyPadding = 2
-                    )
-                }
-
-                2 -> {
-                    ReadingMagnetChartRepr(
-                        readings = state.currentReadingsMag,
-                        showAmount = 20,
-                        safetyPadding = 2
-                    )
-
-                    ReadingMagnetChartRepr(
-                        readings = state.currentReadingsMag,
-                        showAmount = 10,
-                        safetyPadding = 2
-                    )
-                }
-            }
-        }
-    }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -311,22 +180,23 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel) {
 fun AllSensorsSettingsModal(
     state: AllSensorsState,
     viewModel: AllSensorsViewModel,
-    selectedValue: Int,
-    selection: List<SelectionItem>,
-    onRepresentationChanged: (SelectionItem) -> Unit,
+
 ) {
-    var sliderPosition by remember { mutableStateOf(state.sampleRate + 0.0f) }
+    var sliderPositionAccel by remember { mutableStateOf(state.sampleRateAccel + 0.0f) }
+    var sliderPositionGps by remember { mutableStateOf(state.sampleRateGpsMs + 0.0f) }
+    val transportationModes = listOf("Stehen", "Gehen", "Laufen")
+    var selectedMode by remember { mutableStateOf(transportationModes.first()) }
 
     if (state.showBottomModal) {
         ModalBottomSheet(onDismissRequest = { viewModel.setBottomSheetOpenedTarget(false) }) {
-
             Column(modifier = Modifier.padding(horizontal = 30.dp)) {
-                Text(text = getSampleRateDescr(state.sampleRate))
+                //ACCEL dann GPS
+                Text(text = getSampleRateDescr(state.sampleRateAccel))
                 Slider(
-                    value = sliderPosition,
+                    value = sliderPositionAccel,
                     onValueChange = {
-                        sliderPosition = it
-                        viewModel.setSampleRate(it.toInt())
+                        sliderPositionAccel = it
+                        viewModel.setSampleRateAccel(it.toInt())
                     },
                     colors = SliderDefaults.colors(
                         thumbColor = MaterialTheme.colorScheme.secondary,
@@ -337,11 +207,40 @@ fun AllSensorsSettingsModal(
                     valueRange = 0f..3f
                 )
 
-                SelectorRow(
-                    items = selection,
-                    selectedValue = selectedValue,
-                ) { selectedItem ->
-                    onRepresentationChanged(selectedItem)
+                Text(text = getMsRateDescr(state.sampleRateGpsMs.toInt()))
+                Slider(
+                    value = sliderPositionGps,
+                    onValueChange = {
+                        sliderPositionGps = it
+                        viewModel.setSampleRateGps(it)
+                    },
+                    colors = SliderDefaults.colors(
+                        thumbColor = MaterialTheme.colorScheme.secondary,
+                        activeTrackColor = MaterialTheme.colorScheme.secondary,
+                        inactiveTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                    ),
+                    steps = 2,
+                    valueRange = 0f..15f
+                )
+                Text("Fortbewegungsart wählen:")
+                transportationModes.forEach { mode ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(vertical = 8.dp)
+                    ) {
+                        RadioButton(
+                            selected = (selectedMode == mode),
+                            onClick = {
+                                selectedMode = mode
+                                viewModel.setTransportationMode(mode)
+                            },
+                            colors = RadioButtonDefaults.colors(
+                                selectedColor = MaterialTheme.colorScheme.secondary
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = mode)
+                    }
                 }
             }
         }

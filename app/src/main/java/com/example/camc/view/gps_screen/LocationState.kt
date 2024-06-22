@@ -11,7 +11,7 @@ data class LocationState(
     val meterSelection: Float = 1f,
     val currentReadings: List<LocationReading> = listOf(),
     val isRecording: Boolean = false,
-    val singleReading: LocationReading = LocationReading(timestampMillis = 0, long = 0.0, lat = 0.0, altitude = 0.0),
+    val singleReading: LocationReading = LocationReading(timestampMillis = 0, long = 0.0, lat = 0.0, altitude = 0.0, velocity = 0.0F),
     val permissiongiven: Boolean = false,
     val showBottomModal: Boolean = false,
     val triggerUpdate: Boolean = false,
