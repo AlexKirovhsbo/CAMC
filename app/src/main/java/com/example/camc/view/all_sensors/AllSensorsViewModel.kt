@@ -209,6 +209,62 @@ class AllSensorsViewModel(
             }
         }
     }
+    suspend fun exportMergedReadingsToCsv(context: Context) {
+        val accelerationReadings = accelerationDao.getReadingsOrderedByTime().first()
+        val locationReadings = locationDao.getReadingsOrderedByTime().first()
+        val mergedReadings = mergeReadings(accelerationReadings, locationReadings)
+
+        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "merged_readings.csv")
+
+        FileWriter(file).use { writer ->
+            writer.append("timestampMillis,accel_xAxis,accel_yAxis,accel_zAxis,accel_transportationMode,accel_sensor,lat,long,altitude,velocity,location_transportationMode,location_sensor\n")
+            mergedReadings.forEach { reading ->
+                writer.append("${reading.timestampMillis},${reading.accel?.xAxis ?: ""},${reading.accel?.yAxis ?: ""},${reading.accel?.zAxis ?: ""},${reading.accel?.transportationMode ?: ""},${reading.accel?.sensor ?: ""},${reading.location?.lat ?: ""},${reading.location?.long ?: ""},${reading.location?.altitude ?: ""},${reading.location?.velocity ?: ""},${reading.location?.transportationMode ?: ""},${reading.location?.sensor ?: ""}\n")
+            }
+        }
+    }
+
+    private fun mergeReadings(accelReadings: List<AccelerationReading>, locationReadings: List<LocationReading>): List<MergedReading> {
+        val mergedList = mutableListOf<MergedReading>()
+
+        var accelIndex = 0
+        var locationIndex = 0
+
+        while (accelIndex < accelReadings.size && locationIndex < locationReadings.size) {
+            val accel = accelReadings[accelIndex]
+            val location = locationReadings[locationIndex]
+
+            if (accel.timestampMillis == location.timestampMillis) {
+                mergedList.add(MergedReading(accel.timestampMillis, accel, location))
+                accelIndex++
+                locationIndex++
+            } else if (accel.timestampMillis < location.timestampMillis) {
+                mergedList.add(MergedReading(accel.timestampMillis, accel, null))
+                accelIndex++
+            } else {
+                mergedList.add(MergedReading(location.timestampMillis, null, location))
+                locationIndex++
+            }
+        }
+
+        while (accelIndex < accelReadings.size) {
+            mergedList.add(MergedReading(accelReadings[accelIndex].timestampMillis, accelReadings[accelIndex], null))
+            accelIndex++
+        }
+
+        while (locationIndex < locationReadings.size) {
+            mergedList.add(MergedReading(locationReadings[locationIndex].timestampMillis, null, locationReadings[locationIndex]))
+            locationIndex++
+        }
+
+        return mergedList
+    }
+
+    data class MergedReading(
+        val timestampMillis: Long,
+        val accel: AccelerationReading?,
+        val location: LocationReading?
+    )
 }
 
 class AllSensorsViewModelFactory(private val accelDao: AccelerationDao, private val gyroDao: GyroDao, private val magnetDao: MagnetDao, private val gpsDao: LocationDao) :

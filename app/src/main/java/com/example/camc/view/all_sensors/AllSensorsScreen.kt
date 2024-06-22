@@ -165,6 +165,15 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel, navController: NavHostContr
         }) {
             Text("Export für GPS")
         }
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(onClick = {
+            coroutineScope.launch {
+                viewModel.exportMergedReadingsToCsv(ctx)
+            }
+        }) {
+            Text("Export für GPS und Accel")
+        }
     }
 
 
