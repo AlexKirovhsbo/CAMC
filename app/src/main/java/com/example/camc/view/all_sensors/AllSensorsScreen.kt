@@ -9,30 +9,9 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.location.LocationListener
 import android.location.LocationManager
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +30,7 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel, navController: NavHostContr
     val state by viewModel.state.collectAsState()
     val ctx = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    var expanded by remember { mutableStateOf(false) }
 
     if (ActivityCompat.checkSelfPermission(
             ctx,
@@ -148,39 +128,45 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel, navController: NavHostContr
             onDeleteClicked = { viewModel.nukeReadings() },
             onSettingsClicked = { viewModel.toggleBottomSheetOpenedTarget() }
         )
-        Button(onClick = {
-            coroutineScope.launch {
-                viewModel.exportAccelerationReadingsToCsv(ctx)
-            }
-        }) {
-            Text("Export für Accelerometer")
-        }
 
         Spacer(modifier = Modifier.height(10.dp))
 
-        Button(onClick = {
-            coroutineScope.launch {
-                viewModel.exportLocationReadingsToCsv(ctx)
+        // Dropdown menu button
+        Box(modifier = Modifier.wrapContentSize(Alignment.TopStart)) {
+            Button(onClick = { expanded = true }) {
+                Text("Export Options")
             }
-        }) {
-            Text("Export für GPS")
-        }
-        Spacer(modifier = Modifier.height(10.dp))
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(onClick = {
+                    coroutineScope.launch {
+                        viewModel.exportAccelerationReadingsToCsv(ctx)
+                    }
+                    expanded = false
+                }, text = { Text("Export für Accelerometer") })
 
-        Button(onClick = {
-            coroutineScope.launch {
-                viewModel.exportMergedReadingsToCsv(ctx)
+                DropdownMenuItem(onClick = {
+                    coroutineScope.launch {
+                        viewModel.exportLocationReadingsToCsv(ctx)
+                    }
+                    expanded = false
+                }, text = { Text("Export für GPS") })
+
+                DropdownMenuItem(onClick = {
+                    coroutineScope.launch {
+                        viewModel.exportMergedReadingsToCsv(ctx)
+                    }
+                    expanded = false
+                }, text = { Text("Export für GPS und Accel") })
             }
-        }) {
-            Text("Export für GPS und Accel")
         }
     }
-
 
     AllSensorsSettingsModal(
         state = state,
         viewModel = viewModel,
-
     )
 }
 
@@ -189,7 +175,6 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel, navController: NavHostContr
 fun AllSensorsSettingsModal(
     state: AllSensorsState,
     viewModel: AllSensorsViewModel,
-
 ) {
     var sliderPositionAccel by remember { mutableStateOf(state.sampleRateAccel + 0.0f) }
     var sliderPositionGps by remember { mutableStateOf(state.sampleRateGpsMs + 0.0f) }
