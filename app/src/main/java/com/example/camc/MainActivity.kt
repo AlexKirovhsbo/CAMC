@@ -87,10 +87,16 @@ fun Nav(modifier: Modifier = Modifier,
             route = "gps"
         ),*/
         NavItem(
-            title = "Alle Sensoren",
+            title = "Human Transportation Mode",
             selectedIcon = painterResource(R.drawable.baseline_place_24),
             unselectedIcon = painterResource(R.drawable.baseline_place_24),
             route = "allSensors"
+        ),
+        NavItem(
+            title = "Carerra",
+            selectedIcon = painterResource(R.drawable.baseline_place_24),
+            unselectedIcon = painterResource(R.drawable.baseline_place_24),
+            route = "carrera"
         ),
        NavItem(
             title = "Acceleration",

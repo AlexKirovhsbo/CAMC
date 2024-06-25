@@ -12,4 +12,6 @@ data class GyroReading(
     val xAxis: Float,
     val yAxis: Float,
     val zAxis: Float,
+    val transportationMode: String? = null,
+    val sensor : String = "gyrosensor",
 )

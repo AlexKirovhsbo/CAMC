@@ -12,6 +12,9 @@ import com.example.camc.view.acceleration_screen.AccelerationScreen
 import com.example.camc.view.acceleration_screen.AccelerationViewModel
 import com.example.camc.view.acceleration_screen.AccelerationViewModelFactory
 import com.example.camc.view.all_sensors.*
+import com.example.camc.view.carrera.CarreraScreen
+import com.example.camc.view.carrera.CarreraViewModel
+import com.example.camc.view.carrera.CarreraViewModelFactory
 import com.example.camc.view.gps_screen.GpsViewModel
 import com.example.camc.view.gps_screen.GpsViewModelFactory
 import com.example.camc.view.gyroscope_screen.GyroViewModel
@@ -62,6 +65,12 @@ fun Navigation(navController: NavHostController, database: ReadingsDatabase) {
                 factory = AllSensorsViewModelFactory(database.accelerationDao, database.gyroDao, database.magnetDao, database.locationDao)
             )
             AllSensorsScreen(allViewModel, navController)
+        }
+        composable(route = Screen.CarreraScreen.route) {
+            val carreraViewModel = viewModel<CarreraViewModel>(
+                factory = CarreraViewModelFactory(database.accelerationDao, database.gyroDao)
+            )
+            CarreraScreen(carreraViewModel, navController)
         }
     }
 }
