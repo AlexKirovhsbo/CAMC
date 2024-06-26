@@ -31,6 +31,7 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel, navController: NavHostContr
     val ctx = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var expanded by remember { mutableStateOf(false) }
+    val latestClassification by viewModel.latestClassification.collectAsState()
 
     if (ActivityCompat.checkSelfPermission(
             ctx,
@@ -162,6 +163,8 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel, navController: NavHostContr
                 }, text = { Text("Export für GPS und Accel") })
             }
         }
+        // Display the latest classification result
+        Text(text = "Latest Classification: $latestClassification")
     }
 
     AllSensorsSettingsModal(

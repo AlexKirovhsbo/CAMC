@@ -15,11 +15,15 @@ import com.example.camc.model.room.entities.LocationReading
 import com.example.camc.model.room.entities.LocationReadingInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import weka.core.Attribute
+import weka.core.DenseInstance
+import weka.core.Instances
 import java.io.FileWriter
 import java.util.logging.Logger
 import java.io.File
@@ -45,6 +49,11 @@ class AllSensorsViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
     private val _readingsGps = locationDao.getReadingsOrderedByTime()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), emptyList())
+
+    private val _latestClassification = MutableStateFlow<String>("Unknown")
+    val latestClassification: StateFlow<String> = _latestClassification
+
+    val weka = WekaWrapper()
 
     private val _state = MutableStateFlow(AllSensorsState())
     val state = combine(_state, _readingsAccel, _readingsGps)
@@ -88,6 +97,7 @@ class AllSensorsViewModel(
         viewModelScope.launch {
             if (_state.first().isRecording && !executed) {
                 accelerationDao.insertReading(reading)
+                classifyLatestData()
                 executed = true
             } else {
                 return@launch
@@ -118,12 +128,44 @@ class AllSensorsViewModel(
         viewModelScope.launch {
             if (_state.first().isRecording && !executed) {
                 locationDao.insertReading(reading)
+                classifyLatestData()
                 executed = true
             } else {
                 return@launch
             }
         }
     }
+
+    fun classifyLatestData() {
+        val currAccelReading = _state.value.singleReadingAccel
+        // Calculate magnitude:
+        val magnitude = Math.sqrt(
+            (currAccelReading.xAxis * currAccelReading.xAxis +
+                    currAccelReading.yAxis * currAccelReading.yAxis +
+                    currAccelReading.zAxis * currAccelReading.zAxis).toDouble()
+        )
+
+        val currGpsSpeed = _state.value.singleReadingGPS.velocity.toDouble()
+        val attributes = arrayListOf(
+            Attribute("bewegungsart", listOf("Gehen", "Laufen", "Stehen", "")),
+            Attribute("geschwindigkeit"),
+            Attribute("Sensor2"),
+            Attribute("Magnitude"),
+        )
+        val dataSet = Instances("TestInstances", attributes, 0)
+        dataSet.setClassIndex(dataSet.numAttributes() - 1)
+
+        val newInstance = DenseInstance(dataSet.numAttributes())
+        newInstance.setValue(attributes[0], "")
+        newInstance.setValue(attributes[1], currGpsSpeed)
+        newInstance.setValue(attributes[2], 0.0)
+        newInstance.setValue(attributes[3], magnitude)
+
+        newInstance.setDataset(dataSet)
+        _latestClassification.value = weka.classifyInstance(newInstance).toString()
+
+    }
+
 
     fun setBottomSheetOpenedTarget(target: Boolean) {
         _state.update {

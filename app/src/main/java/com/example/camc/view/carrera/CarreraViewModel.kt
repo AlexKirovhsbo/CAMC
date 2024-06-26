@@ -198,8 +198,8 @@ class CarreraViewModel(
     }
     suspend fun exportMergedReadingsToCsv(context: Context) {
         val accelerationReadings = accelerationDao.getReadingInfoOrderedByTime().first()
-        val locationReadings = gyroDao.getReadingInfoOrderedByTime().first()
-        val mergedReadings = mergeReadings(accelerationReadings, locationReadings)
+        val gyroReadings = gyroDao.getReadingInfoOrderedByTime().first()
+        val mergedReadings = mergeReadings(accelerationReadings, gyroReadings)
 
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "merged_readings.csv")
 
@@ -211,7 +211,7 @@ class CarreraViewModel(
         }
     }
 
-    private fun mergeReadings(accelReadings: List<AccelerationReadingInfo>, locationReadings: List<GyroInfoReading>): List<MergedReading> {
+    private fun mergeReadings(accelReadings: List<AccelerationReadingInfo>, gyroReadings: List<GyroInfoReading>): List<MergedReading> {
         val mergedList = mutableListOf<MergedReading>()
 
         var accelIndex = 0
@@ -220,9 +220,9 @@ class CarreraViewModel(
         var lastAccel: AccelerationReadingInfo? = null
         var lastLocation: GyroInfoReading? = null
 
-        while (accelIndex < accelReadings.size || locationIndex < locationReadings.size) {
+        while (accelIndex < accelReadings.size || locationIndex < gyroReadings.size) {
             val accel = if (accelIndex < accelReadings.size) accelReadings[accelIndex] else null
-            val location = if (locationIndex < locationReadings.size) locationReadings[locationIndex] else null
+            val location = if (locationIndex < gyroReadings.size) gyroReadings[locationIndex] else null
 
             if (accel == null) {
                 mergedList.add(MergedReading(location!!.timestampMillis, lastAccel, location))
