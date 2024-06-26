@@ -74,386 +74,219 @@ class WekaWrapper : AbstractClassifier() {
 }
 
 class WekaClassifier {
-
     companion object {
+
         @Throws(Exception::class)
         fun classify(i: Array<Any?>): Double {
             var p = Double.NaN
-            p = N7b447cee0(i)
+            p = N23ac15390(i)
             return p
         }
 
-        private fun N7b447cee0(i: Array<Any?>): Double {
+        fun N23ac15390(i: Array<Any?>): Double {
+            var p = Double.NaN
+            if (i[1] == null) {
+                p = 2.0
+            } else if ((i[1] as Double) <= 0.0) {
+                p = N4be3f0d21(i)
+            } else if ((i[1] as Double) > 0.0) {
+                p = N7e4dfbc13(i)
+            }
+            return p
+        }
+
+        fun N4be3f0d21(i: Array<Any?>): Double {
+            var p = Double.NaN
+            if (i[2] == null) {
+                p = 2.0
+            } else if ((i[2] as Double) <= 10.136029169279189) {
+                p = 2.0
+            } else if ((i[2] as Double) > 10.136029169279189) {
+                p = N2b6ea54c2(i)
+            }
+            return p
+        }
+
+        fun N2b6ea54c2(i: Array<Any?>): Double {
+            var p = Double.NaN
+            if (i[2] == null) {
+                p = 2.0
+            } else if ((i[2] as Double) <= 14.653306956125615) {
+                p = 2.0
+            } else if ((i[2] as Double) > 14.653306956125615) {
+                p = 1.0
+            }
+            return p
+        }
+
+        fun N7e4dfbc13(i: Array<Any?>): Double {
             var p = Double.NaN
             if (i[1] == null) {
                 p = 0.0
             } else if ((i[1] as Double) <= 1.5) {
-                p = N6884900e1(i)
+                p = N3d0b3cec4(i)
             } else if ((i[1] as Double) > 1.5) {
-                p = N68bd364329(i)
+                p = 1.0
             }
             return p
         }
 
-        private fun N6884900e1(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 2.0
-            } else if ((i[3] as Double) <= 10.10834065556011) {
-                p = N3e24624f2(i)
-            } else if ((i[3] as Double) > 10.10834065556011) {
-                p = N797fd55d17(i)
-            }
-            return p
-        }
-
-        private fun N3e24624f2(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 0.0
-            } else if ((i[3] as Double) <= 9.725809188790992) {
-                p = N1cf32c273(i)
-            } else if ((i[3] as Double) > 9.725809188790992) {
-                p = N7edbaeb413(i)
-            }
-            return p
-        }
-
-        private fun N1cf32c273(i: Array<Any?>): Double {
+        fun N3d0b3cec4(i: Array<Any?>): Double {
             var p = Double.NaN
             if (i[1] == null) {
                 p = 1.0
             } else if ((i[1] as Double) <= 0.91) {
-                p = N4488805b4(i)
+                p = N69ba2eff5(i)
             } else if ((i[1] as Double) > 0.91) {
-                p = N156b51796(i)
+                p = N7a5f638f9(i)
             }
             return p
         }
 
-        private fun N4488805b4(i: Array<Any?>): Double {
+        fun N69ba2eff5(i: Array<Any?>): Double {
             var p = Double.NaN
             if (i[1] == null) {
                 p = 0.0
             } else if ((i[1] as Double) <= 0.47) {
-                p = N8407c245(i)
+                p = N3720a2416(i)
             } else if ((i[1] as Double) > 0.47) {
                 p = 1.0
             }
             return p
         }
 
-        private fun N8407c245(i: Array<Any?>): Double {
+        fun N3720a2416(i: Array<Any?>): Double {
             var p = Double.NaN
-            if (i[3] == null) {
+            if (i[2] == null) {
+                p = 0.0
+            } else if ((i[2] as Double) <= 13.9961667022018) {
+                p = N2622d4977(i)
+            } else if ((i[2] as Double) > 13.9961667022018) {
                 p = 1.0
-            } else if ((i[3] as Double) <= 7.271891261465903) {
-                p = 1.0
-            } else if ((i[3] as Double) > 7.271891261465903) {
+            }
+            return p
+        }
+
+        fun N2622d4977(i: Array<Any?>): Double {
+            var p = Double.NaN
+            if (i[2] == null) {
+                p = 0.0
+            } else if ((i[2] as Double) <= 7.616120704307761) {
+                p = N422a60e38(i)
+            } else if ((i[2] as Double) > 7.616120704307761) {
                 p = 0.0
             }
             return p
         }
 
-        private fun N156b51796(i: Array<Any?>): Double {
+        fun N422a60e38(i: Array<Any?>): Double {
+            var p = Double.NaN
+            if (i[2] == null) {
+                p = 1.0
+            } else if ((i[2] as Double) <= 7.247434256175666) {
+                p = 1.0
+            } else if ((i[2] as Double) > 7.247434256175666) {
+                p = 0.0
+            }
+            return p
+        }
+
+        fun N7a5f638f9(i: Array<Any?>): Double {
             var p = Double.NaN
             if (i[1] == null) {
                 p = 0.0
             } else if ((i[1] as Double) <= 1.39) {
-                p = N107cd5e77(i)
+                p = N48dff42f10(i)
             } else if ((i[1] as Double) > 1.39) {
-                p = N2af347e12(i)
+                p = N6fb9c40d15(i)
             }
             return p
         }
 
-        private fun N107cd5e77(i: Array<Any?>): Double {
+        fun N48dff42f10(i: Array<Any?>): Double {
             var p = Double.NaN
             if (i[1] == null) {
                 p = 0.0
             } else if ((i[1] as Double) <= 1.32) {
-                p = N107615eb8(i)
+                p = N786907cf11(i)
             } else if ((i[1] as Double) > 1.32) {
                 p = 0.0
             }
             return p
         }
 
-        private fun N107615eb8(i: Array<Any?>): Double {
+        fun N786907cf11(i: Array<Any?>): Double {
             var p = Double.NaN
             if (i[1] == null) {
                 p = 0.0
             } else if ((i[1] as Double) <= 1.31) {
-                p = N1bdcea9d9(i)
+                p = N69d54d5912(i)
             } else if ((i[1] as Double) > 1.31) {
-                p = N22d6a48211(i)
+                p = N681718f713(i)
             }
             return p
         }
 
-        private fun N1bdcea9d9(i: Array<Any?>): Double {
+        fun N69d54d5912(i: Array<Any?>): Double {
             var p = Double.NaN
-            if (i[3] == null) {
+            if (i[2] == null) {
                 p = 0.0
-            } else if ((i[3] as Double) <= 5.23711861206545) {
-                p = N5473900610(i)
-            } else if ((i[3] as Double) > 5.23711861206545) {
+            } else if ((i[2] as Double) <= 19.906152422031283) {
                 p = 0.0
+            } else if ((i[2] as Double) > 19.906152422031283) {
+                p = 1.0
             }
             return p
         }
 
-        private fun N5473900610(i: Array<Any?>): Double {
+        fun N681718f713(i: Array<Any?>): Double {
             var p = Double.NaN
-            if (i[3] == null) {
+            if (i[2] == null) {
                 p = 1.0
-            } else if ((i[3] as Double) <= 3.328174595955562) {
+            } else if ((i[2] as Double) <= 6.631789084394384) {
                 p = 1.0
-            } else if ((i[3] as Double) > 3.328174595955562) {
-                p = 0.0
+            } else if ((i[2] as Double) > 6.631789084394384) {
+                p = N5f5ef75614(i)
             }
             return p
         }
 
-        private fun N22d6a48211(i: Array<Any?>): Double {
+        fun N5f5ef75614(i: Array<Any?>): Double {
             var p = Double.NaN
-            if (i[3] == null) {
-                p = 1.0
-            } else if ((i[3] as Double) <= 6.631789084394384) {
-                p = 1.0
-            } else if ((i[3] as Double) > 6.631789084394384) {
+            if (i[2] == null) {
                 p = 0.0
+            } else if ((i[2] as Double) <= 14.742764317559029) {
+                p = 0.0
+            } else if ((i[2] as Double) > 14.742764317559029) {
+                p = 1.0
             }
             return p
         }
 
-        private fun N2af347e12(i: Array<Any?>): Double {
+        fun N6fb9c40d15(i: Array<Any?>): Double {
             var p = Double.NaN
             if (i[1] == null) {
                 p = 1.0
             } else if ((i[1] as Double) <= 1.44) {
                 p = 1.0
             } else if ((i[1] as Double) > 1.44) {
-                p = 0.0
+                p = N2cc5f32616(i)
             }
             return p
         }
 
-        private fun N7edbaeb413(i: Array<Any?>): Double {
+        fun N2cc5f32616(i: Array<Any?>): Double {
             var p = Double.NaN
-            if (i[3] == null) {
-                p = 2.0
-            } else if ((i[3] as Double) <= 9.925946083618596) {
-                p = 2.0
-            } else if ((i[3] as Double) > 9.925946083618596) {
-                p = N36e0f2c914(i)
-            }
-            return p
-        }
-
-        private fun N36e0f2c914(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 2.0
-            } else if ((i[3] as Double) <= 9.976602249617615) {
-                p = 2.0
-            } else if ((i[3] as Double) > 9.976602249617615) {
-                p = N2185a22315(i)
-            }
-            return p
-        }
-
-        private fun N2185a22315(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[1] == null) {
+            if (i[2] == null) {
                 p = 0.0
-            } else if ((i[1] as Double) <= 0.91) {
-                p = N5a726ea916(i)
-            } else if ((i[1] as Double) > 0.91) {
+            } else if ((i[2] as Double) <= 12.839708254451695) {
                 p = 0.0
-            }
-            return p
-        }
-
-        private fun N5a726ea916(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[1] == null) {
-                p = 0.0
-            } else if ((i[1] as Double) <= 0.47) {
-                p = 0.0
-            } else if ((i[1] as Double) > 0.47) {
-                p = 1.0
-            }
-            return p
-        }
-
-        private fun N797fd55d17(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[1] == null) {
-                p = 1.0
-            } else if ((i[1] as Double) <= 0.91) {
-                p = N48b8160118(i)
-            } else if ((i[1] as Double) > 0.91) {
-                p = Nd6e188420(i)
-            }
-            return p
-        }
-
-        private fun N48b8160118(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[1] == null) {
-                p = 0.0
-            } else if ((i[1] as Double) <= 0.47) {
-                p = N4420218f19(i)
-            } else if ((i[1] as Double) > 0.47) {
-                p = 1.0
-            }
-            return p
-        }
-
-        private fun N4420218f19(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 0.0
-            } else if ((i[3] as Double) <= 13.9961667022018) {
-                p = 0.0
-            } else if ((i[3] as Double) > 13.9961667022018) {
-                p = 1.0
-            }
-            return p
-        }
-
-        private fun Nd6e188420(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[1] == null) {
-                p = 0.0
-            } else if ((i[1] as Double) <= 1.39) {
-                p = Na3ce14921(i)
-            } else if ((i[1] as Double) > 1.39) {
-                p = N599235b727(i)
-            }
-            return p
-        }
-
-        private fun Na3ce14921(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[1] == null) {
-                p = 0.0
-            } else if ((i[1] as Double) <= 1.32) {
-                p = N23cf61122(i)
-            } else if ((i[1] as Double) > 1.32) {
-                p = 0.0
-            }
-            return p
-        }
-
-        private fun N23cf61122(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[1] == null) {
-                p = 0.0
-            } else if ((i[1] as Double) <= 1.31) {
-                p = N47d5838023(i)
-            } else if ((i[1] as Double) > 1.31) {
-                p = N323079f226(i)
-            }
-            return p
-        }
-
-        private fun N47d5838023(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 0.0
-            } else if ((i[3] as Double) <= 15.20876935453939) {
-                p = 0.0
-            } else if ((i[3] as Double) > 15.20876935453939) {
-                p = N3a8209c624(i)
-            }
-            return p
-        }
-
-        private fun N3a8209c624(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 0.0
-            } else if ((i[3] as Double) <= 19.78233408962514) {
-                p = 0.0
-            } else if ((i[3] as Double) > 19.78233408962514) {
-                p = N5759917625(i)
-            }
-            return p
-        }
-
-        private fun N5759917625(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 0.0
-            } else if ((i[3] as Double) <= 19.906152422031283) {
-                p = 0.0
-            } else if ((i[3] as Double) > 19.906152422031283) {
-                p = 1.0
-            }
-            return p
-        }
-
-        private fun N323079f226(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 0.0
-            } else if ((i[3] as Double) <= 14.742764317559029) {
-                p = 0.0
-            } else if ((i[3] as Double) > 14.742764317559029) {
-                p = 1.0
-            }
-            return p
-        }
-
-        private fun N599235b727(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[1] == null) {
-                p = 1.0
-            } else if ((i[1] as Double) <= 1.44) {
-                p = 1.0
-            } else if ((i[1] as Double) > 1.44) {
-                p = N7374cb7a28(i)
-            }
-            return p
-        }
-
-        private fun N7374cb7a28(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 0.0
-            } else if ((i[3] as Double) <= 12.866017812480052) {
-                p = 0.0
-            } else if ((i[3] as Double) > 12.866017812480052) {
-                p = 1.0
-            }
-            return p
-        }
-
-        private fun N68bd364329(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 1.0
-            } else if ((i[3] as Double) <= 9.66465898070478) {
-                p = 1.0
-            } else if ((i[3] as Double) > 9.66465898070478) {
-                p = N59f32d4f30(i)
-            }
-            return p
-        }
-
-        private fun N59f32d4f30(i: Array<Any?>): Double {
-            var p = Double.NaN
-            if (i[3] == null) {
-                p = 2.0
-            } else if ((i[3] as Double) <= 10.077965711681404) {
-                p = 2.0
-            } else if ((i[3] as Double) > 10.077965711681404) {
+            } else if ((i[2] as Double) > 12.839708254451695) {
                 p = 1.0
             }
             return p
         }
     }
 }
+
 

@@ -149,7 +149,6 @@ class AllSensorsViewModel(
         val attributes = arrayListOf(
             Attribute("bewegungsart", listOf("Gehen", "Laufen", "Stehen", "")),
             Attribute("geschwindigkeit"),
-            Attribute("Sensor2"),
             Attribute("Magnitude"),
         )
         val dataSet = Instances("TestInstances", attributes, 0)
@@ -158,8 +157,7 @@ class AllSensorsViewModel(
         val newInstance = DenseInstance(dataSet.numAttributes())
         newInstance.setValue(attributes[0], "")
         newInstance.setValue(attributes[1], currGpsSpeed)
-        newInstance.setValue(attributes[2], 0.0)
-        newInstance.setValue(attributes[3], magnitude)
+        newInstance.setValue(attributes[2], magnitude)
 
         newInstance.setDataset(dataSet)
 
@@ -167,7 +165,7 @@ class AllSensorsViewModel(
             1.0 -> "Laufen"
             2.0 -> "Gehen"
             3.0 -> "Stehen"
-            else -> "Unknown" // Handle unexpected values if necessary
+            else -> "Unknown"
         }
 
         _latestClassification.value = resultString
