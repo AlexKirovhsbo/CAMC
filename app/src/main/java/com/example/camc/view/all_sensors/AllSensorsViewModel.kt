@@ -162,7 +162,7 @@ class AllSensorsViewModel(
         newInstance.setValue(attributes[3], magnitude)
 
         newInstance.setDataset(dataSet)
-        _latestClassification.value = weka.classifyInstance(newInstance).toString()
+        _latestClassification.value = "GPSSPEED:"+  currGpsSpeed.toString() + " ACCELMAGNITUDE" + magnitude.toString()
 
     }
 
