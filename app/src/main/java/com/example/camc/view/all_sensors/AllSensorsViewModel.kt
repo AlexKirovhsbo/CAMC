@@ -160,13 +160,15 @@ class AllSensorsViewModel(
         newInstance.setValue(attributes[2], magnitude)
 
         newInstance.setDataset(dataSet)
+        val classified = weka.classifyInstance(newInstance)
 
-        val resultString = when (weka.classifyInstance(newInstance)) {
+        val resultString = when (classified) {
             1.0 -> "Laufen"
             2.0 -> "Gehen"
             3.0 -> "Stehen"
             else -> "Unknown"
         }
+        resultString + " GPSSPEED: " + currGpsSpeed.toString() + " AccMag: " + magnitude.toString() + "ClassifiedDouble: " + classified.toString()
 
         _latestClassification.value = resultString
     }
