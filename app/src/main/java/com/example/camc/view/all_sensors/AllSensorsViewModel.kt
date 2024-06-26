@@ -145,7 +145,8 @@ class AllSensorsViewModel(
                     currAccelReading.zAxis * currAccelReading.zAxis).toDouble()
         )
 
-        val currGpsSpeed = _state.value.singleReadingGPS.velocity.toDouble()
+        val currGpsSpeed = "%.2f".format(_state.value.singleReadingGPS.velocity.toDouble()).toDouble()
+
         val attributes = arrayListOf(
             Attribute("bewegungsart", listOf("Gehen", "Laufen", "Stehen", "")),
             Attribute("geschwindigkeit"),
