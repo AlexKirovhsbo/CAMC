@@ -162,8 +162,15 @@ class AllSensorsViewModel(
         newInstance.setValue(attributes[3], magnitude)
 
         newInstance.setDataset(dataSet)
-        _latestClassification.value = "GPSSPEED:"+  currGpsSpeed.toString() + " ACCELMAGNITUDE" + magnitude.toString()
 
+        val resultString = when (weka.classifyInstance(newInstance)) {
+            1.0 -> "Laufen"
+            2.0 -> "Gehen"
+            3.0 -> "Stehen"
+            else -> "Unknown" // Handle unexpected values if necessary
+        }
+
+        _latestClassification.value = resultString
     }
 
 
