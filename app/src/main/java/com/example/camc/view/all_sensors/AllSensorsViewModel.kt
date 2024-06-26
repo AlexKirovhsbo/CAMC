@@ -27,6 +27,7 @@ import weka.core.Instances
 import java.io.FileWriter
 import java.util.logging.Logger
 import java.io.File
+import kotlin.math.sqrt
 
 /**
  * Acceleration ViewModel
@@ -139,13 +140,10 @@ class AllSensorsViewModel(
     fun classifyLatestData() {
         val currAccelReading = _state.value.singleReadingAccel
         // Calculate magnitude:
-        val magnitude = Math.sqrt(
-            (currAccelReading.xAxis * currAccelReading.xAxis +
-                    currAccelReading.yAxis * currAccelReading.yAxis +
-                    currAccelReading.zAxis * currAccelReading.zAxis).toDouble()
-        )
+        val magnitude = sqrt((currAccelReading.xAxis * currAccelReading.xAxis + currAccelReading.yAxis * currAccelReading.yAxis + currAccelReading.zAxis * currAccelReading.zAxis).toDouble())
 
-        val currGpsSpeed = ((_state.value.singleReadingGPS.velocity.toDouble() * 100).toInt() / 100).toDouble()
+        val currGpsSpeed = _state.value.singleReadingGPS.velocity.toDouble()
+
         val attributes = arrayListOf(
             Attribute("bewegungsart", listOf("Gehen", "Laufen", "Stehen", "")),
             Attribute("geschwindigkeit"),
@@ -163,9 +161,9 @@ class AllSensorsViewModel(
         val classified = weka.classifyInstance(newInstance)
 
         var resultString = when (classified) {
-            1.0 -> "Laufen"
+            1.0 -> "Stehen"
             2.0 -> "Gehen"
-            3.0 -> "Stehen"
+            0.0 -> "Laufen"
             else -> "Unknown"
         }
         resultString += " GPSSPEED: " + currGpsSpeed.toString() + " AccMag: " + magnitude.toString() + "ClassifiedDouble: " + classified.toString()
