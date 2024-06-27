@@ -166,7 +166,8 @@ class AllSensorsViewModel(
             0.0 -> "Laufen"
             else -> "Unknown"
         }
-        resultString += " GPSSPEED: " + currGpsSpeed.toString() + " AccMag: " + magnitude.toString() + "ClassifiedDouble: " + classified.toString()
+        resultString += "\nGPSSPEED: ${currGpsSpeed}\nAccMag: ${magnitude}\n"
+
 
         _latestClassification.value = resultString
     }

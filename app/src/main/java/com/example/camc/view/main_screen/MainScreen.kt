@@ -124,20 +124,23 @@ fun MainScreenContent(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(65.dp))
-        Text("Willkommen zur Datensammler App für das erste Praktikum")
+        Text("Willkommen zur App für das zweite Praktikum zur Datenauswertung, maschinellen Lernen und Erkennung von Aktivitätsmustern")
+        Spacer(modifier = Modifier.height(20.dp))
         Button(onClick = {
             uriHandler.openUri("https://github.com/AlexKirovhsbo/CAMC")
         }) {
             Text("Github")
         }
 
-        Spacer(modifier = Modifier.height(65.dp))
-        Text("Sensoren können über das erweiterte Menü ausgewählt werden.")
+        Spacer(modifier = Modifier.height(20.dp))
+        Text("Sensoren können über das erweiterte Menü ausgewählt werden. Ebenfalls kann man zwischen der Datenaufzeichnung für menschliche Bewegung und für die Carrerabahn wählen.")
+        Spacer(modifier = Modifier.height(5.dp))
+        Text("Die gesammelten Daten lassen sich als csv exportieren für die einzelnen genutzten Sensoren und gesammelt.")
         Spacer(modifier = Modifier.height(5.dp))
         Text("Jeder Sensor kann bei Bedarf seine Werte in die Room-Datenbank schreiben.")
         Spacer(modifier = Modifier.height(5.dp))
         Text("Der Prozess des Schreibens und die Werkzeuge zum Anschauen der Messreihe können mit dem \"Start Recording\" Knopf gestartet werden.")
         Spacer(modifier = Modifier.height(5.dp))
-        Text("Anpassung je Sensor erfolgt über die Einstellungen.")
+        Text("Anpassung je Seite erfolgt über die Einstellungen.")
     }
 }
