@@ -13,6 +13,7 @@ data class LocationReading(
     val long: Double,
     val altitude: Double,
     val velocity: Float,
+    val bearing: Float,
     val transportationMode: String? = null,
     val sensor : String = "gps",
 )

@@ -20,7 +20,7 @@ interface LocationDao {
     fun getReadingsOrderedByTime(): Flow<List<LocationReading>>
 
     @Query("""
-        SELECT timestampMillis, velocity, transportationMode, sensor 
+        SELECT timestampMillis, velocity, bearing, transportationMode, sensor 
         FROM locationreading 
         ORDER BY timestampMillis ASC
     """)

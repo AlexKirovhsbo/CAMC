@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 data class LocationReadingInfo(
     val timestampMillis: Long,
     val velocity: Float,
+    val bearing: Float,
     val transportationMode: String?,
     val sensor: String
 )

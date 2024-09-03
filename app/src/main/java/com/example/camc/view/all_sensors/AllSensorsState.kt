@@ -19,7 +19,7 @@ data class AllSensorsState (
     val sampleRateGpsMs: Float = 15f,
     val meterSelectionGps: Float = 1f,
     val currentReadingsGPS: List<LocationReading> = listOf(),
-    val singleReadingGPS: LocationReading = LocationReading(timestampMillis = 0, long = 0.0, lat = 0.0, altitude = 0.0, velocity = 0.0F),
+    val singleReadingGPS: LocationReading = LocationReading(timestampMillis = 0, long = 0.0, lat = 0.0, altitude = 0.0, velocity = 0.0F, bearing = 0.0F),
     val providerGps: String = LocationManager.GPS_PROVIDER,
     val transportationMode: String = "unknown",
 )

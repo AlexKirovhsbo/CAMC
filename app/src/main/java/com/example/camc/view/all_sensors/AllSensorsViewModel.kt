@@ -106,7 +106,7 @@ class AllSensorsViewModel(
         }
     }
 
-    fun onReceiveNewGpsReading(long: Double, lat: Double, speed: Float) {
+    fun onReceiveNewGpsReading(long: Double, lat: Double, speed: Float, bearing: Float) {
         if (long == null || lat == null) return
 
         var reading = LocationReading(
@@ -115,6 +115,7 @@ class AllSensorsViewModel(
             lat = lat,
             altitude = 0.0, //values[2]
             velocity = speed,
+            bearing = bearing,
             transportationMode = _state.value.transportationMode,
         )
 
@@ -253,9 +254,9 @@ class AllSensorsViewModel(
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "location_readings.csv")
 
         FileWriter(file).use { writer ->
-            writer.append("timestampMillis,velocity,transportationMode,sensor\n")
+            writer.append("timestampMillis,velocity,bearing,transportationMode,sensor\n")
             readings.forEach { reading ->
-                writer.append("${reading.timestampMillis},${reading.velocity},${reading.transportationMode ?: ""},${reading.sensor}\n")
+                writer.append("${reading.timestampMillis},${reading.velocity},${reading.bearing},${reading.transportationMode ?: ""},${reading.sensor}\n")
             }
         }
     }
@@ -267,9 +268,9 @@ class AllSensorsViewModel(
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "merged_readings.csv")
 
         FileWriter(file).use { writer ->
-            writer.append("timestampMillis,accel_xAxis,accel_yAxis,accel_zAxis,accel_transportationMode,accel_sensor,velocity,location_transportationMode,location_sensor\n")
+            writer.append("timestampMillis,accel_xAxis,accel_yAxis,accel_zAxis,accel_transportationMode,accel_sensor,velocity,bearing,location_transportationMode,location_sensor\n")
             mergedReadings.forEach { reading ->
-                writer.append("${reading.timestampMillis},${reading.accel?.xAxis ?: ""},${reading.accel?.yAxis ?: ""},${reading.accel?.zAxis ?: ""},${reading.accel?.transportationMode ?: ""},${reading.accel?.sensor ?: ""},${reading.location?.velocity ?: ""},${reading.location?.transportationMode ?: ""},${reading.location?.sensor ?: ""}\n")
+                writer.append("${reading.timestampMillis},${reading.accel?.xAxis ?: ""},${reading.accel?.yAxis ?: ""},${reading.accel?.zAxis ?: ""},${reading.accel?.transportationMode ?: ""},${reading.accel?.sensor ?: ""},${reading.location?.velocity ?: ""},${reading.location?.bearing ?: ""},${reading.location?.transportationMode ?: ""},${reading.location?.sensor ?: ""}\n")
             }
         }
     }

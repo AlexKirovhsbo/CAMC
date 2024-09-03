@@ -67,7 +67,7 @@ fun AllSensorsScreen(viewModel: AllSensorsViewModel, navController: NavHostContr
 
                 locationManager = ctx.getSystemService(Context.LOCATION_SERVICE) as LocationManager
                 locationListener = LocationListener { p0 ->
-                    viewModel.onReceiveNewGpsReading(p0.longitude, p0.latitude, p0.speed)
+                    viewModel.onReceiveNewGpsReading(p0.longitude, p0.latitude, p0.speed, p0.bearing)
                 }
                 locationListener?.let {
                     locationManager!!.requestLocationUpdates(
@@ -181,7 +181,7 @@ fun AllSensorsSettingsModal(
 ) {
     var sliderPositionAccel by remember { mutableStateOf(state.sampleRateAccel + 0.0f) }
     var sliderPositionGps by remember { mutableStateOf(state.sampleRateGpsMs + 0.0f) }
-    val transportationModes = listOf("Stehen", "Gehen", "Laufen")
+    val transportationModes = listOf("Stehen", "Gehen", "Laufen", "Auto", "Zug", "Bahn (oberirdisch)", "Bahn (unterirdisch)")
     var selectedMode by remember { mutableStateOf(transportationModes.first()) }
 
     if (state.showBottomModal) {

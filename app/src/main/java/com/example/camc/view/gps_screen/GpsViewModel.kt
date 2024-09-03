@@ -52,7 +52,8 @@ class GpsViewModel(
             long = long,
             lat = lat,
             velocity = 0.0F,
-            altitude = 0.0 //values[2]
+            bearing = 0.0F,
+            altitude = 0.0, //values[2]
         )
 
         _state.update {

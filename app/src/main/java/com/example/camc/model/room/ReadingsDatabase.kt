@@ -17,7 +17,7 @@ import com.example.camc.model.room.entities.MagnetReading
         LocationReading::class,
         GyroReading::class,
         MagnetReading::class],
-    version  = 5
+    version  = 6
 )
 abstract class ReadingsDatabase: RoomDatabase() {
     abstract val accelerationDao: AccelerationDao
