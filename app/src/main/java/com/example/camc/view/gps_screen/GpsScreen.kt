@@ -82,7 +82,11 @@ fun GpsScreen(
 
     var locationManager by remember { mutableStateOf<LocationManager?>(null) }
     var locationListener by remember { mutableStateOf<LocationListener?>(null) }
-    var mapView = remember { MapView(ctx) }
+    var mapView = remember { MapView(ctx).apply {
+        controller.setZoom(20.0)   // Initial zoom level
+        setMultiTouchControls(true)
+        setBuiltInZoomControls(true)
+    } }
     val controller = remember { mapView.controller as IMapController }
     val selection = SelectionItem.litFromLabels("1m", "10m", "50m")
     var checked by remember { mutableStateOf(false) }
@@ -94,8 +98,10 @@ fun GpsScreen(
                 locationListener?.let { locationManager?.removeUpdates(it) }
             } else if (event == Lifecycle.Event.ON_CREATE) {
                 locationManager = ctx.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-                locationListener = LocationListener { p0 ->
-                    viewModel.onReceiveNewReading(p0.longitude, p0.latitude)
+                locationListener = LocationListener { location ->
+                    viewModel.onReceiveNewReading(location.longitude, location.latitude)
+                    controller.setCenter(GeoPoint(location.latitude, location.longitude))  // Center map on location
+                    mapView.invalidate()  // Ensure the map updates with the new location
                 }
                 locationListener?.let {
                     locationManager!!.requestLocationUpdates(
@@ -105,7 +111,6 @@ fun GpsScreen(
                         it
                     )
                 }
-
             }
         }
     )
@@ -124,7 +129,6 @@ fun GpsScreen(
         onDispose { }
     }
 
-
     SingleReadingMarker(state = state, mapView = mapView)
     if (state.currentReadings.isNotEmpty()) {
         MultiReadingMarker(state = state, mapView = mapView)
@@ -134,14 +138,19 @@ fun GpsScreen(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
     ) {
+
+        val context = LocalContext.current
         Configuration.getInstance().load(ctx, ctx.getSharedPreferences("osmdroid", 0))
-        mapView.setTileSource(TileSourceFactory.DEFAULT_TILE_SOURCE)
-        AndroidView(factory = { mapView }) { view ->
-            controller.setZoom(20.0)
-            controller.setCenter(GeoPoint(state.singleReading.lat, state.singleReading.long))
-            mapView.invalidate()
-        }
+        AndroidView(
+            modifier = Modifier.fillMaxSize(),
+            factory = { mapView },
+            update = {
+                controller.setCenter(GeoPoint(state.singleReading.lat, state.singleReading.long))
+                mapView.invalidate()
+            }
+        )
         Modifier.fillMaxSize()
+
 
         Row (
             modifier = Modifier

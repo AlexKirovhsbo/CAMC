@@ -2,6 +2,7 @@ package com.example.camc
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.preference.PreferenceManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +34,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
 import androidx.room.Room
 import com.example.camc.model.NavItem
@@ -40,6 +43,12 @@ import com.example.camc.model.room.ReadingsDatabase
 import com.example.camc.ui.theme.Prakt1Theme
 import com.example.camc.view.Navigation
 import kotlinx.coroutines.launch
+import org.osmdroid.config.Configuration
+import org.osmdroid.library.BuildConfig
+import android.content.pm.PackageManager
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.views.MapView
+import android.Manifest
 
 
 class MainActivity : ComponentActivity() {
@@ -52,8 +61,15 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.INTERNET), 0)
+        }
+        val ctx = applicationContext
         super.onCreate(savedInstanceState)
-
+        Configuration.getInstance().load(
+            applicationContext,
+            PreferenceManager.getDefaultSharedPreferences(applicationContext)
+        )
         setContent {
             Prakt1Theme {
                 // A surface container using the 'background' color from the theme
@@ -80,44 +96,18 @@ fun Nav(modifier: Modifier = Modifier,
             unselectedIcon = painterResource(R.drawable.baseline_home_24),
             route = "mainscreen"
         ),
-        /*NavItem(
+        NavItem(
             title = "Location",
             selectedIcon = painterResource(R.drawable.baseline_place_24),
             unselectedIcon = painterResource(R.drawable.baseline_place_24),
             route = "gps"
-        ),*/
+        ),
         NavItem(
             title = "Human Transportation Mode",
             selectedIcon = painterResource(R.drawable.baseline_place_24),
             unselectedIcon = painterResource(R.drawable.baseline_place_24),
             route = "allSensors"
         ),
-        NavItem(
-            title = "Carerra",
-            selectedIcon = painterResource(R.drawable.baseline_place_24),
-            unselectedIcon = painterResource(R.drawable.baseline_place_24),
-            route = "carrera"
-        ),
-       NavItem(
-            title = "Acceleration",
-            selectedIcon = painterResource(R.drawable.baseline_speed_24),
-            unselectedIcon = painterResource(R.drawable.baseline_speed_24),
-            route = "accel"
-        ),
-        NavItem(
-            title = "Gyroscope",
-            selectedIcon = painterResource(R.drawable.baseline_screen_rotation_alt_24),
-            unselectedIcon = painterResource(R.drawable.baseline_screen_rotation_alt_24),
-            route = "gyro"
-        ),
-        NavItem(
-            title = "Magnetometer",
-            selectedIcon = painterResource(R.drawable.baseline_explore_24),
-            unselectedIcon = painterResource(R.drawable.baseline_explore_24),
-            route = "mag"
-        )
-        
-
     )
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
@@ -168,7 +158,7 @@ fun Nav(modifier: Modifier = Modifier,
             topBar = {
                 TopAppBar(
                     title = {
-                        Text(text = "Gruppe 1")
+                        Text(text = "Stay safe")
                     },
                     navigationIcon = {
                         IconButton(onClick = {
@@ -178,7 +168,7 @@ fun Nav(modifier: Modifier = Modifier,
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu"
+                                contentDescription = "Menü"
                             )
                         }
                     }
